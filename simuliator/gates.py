@@ -30,6 +30,7 @@ def init_rx_gate():
             [(np.round(np.sin(psi / 2), ROUND)) * (-1j), np.round(np.cos(psi / 2), ROUND), ],
         ])
         return Rx
+
     return Gate('Rx', gate)
 
 
@@ -79,11 +80,13 @@ def init_u_gate():
 
     return Gate("U", gate)
 
+
 rx_gate = init_rx_gate()
 ry_gate = init_ry_gate()
 rz_gate = init_rz_gate()
 p_gate = init_p_gate()
 u_gate = init_u_gate()
+
 
 class SimpleGate:
     def __init__(self, name, value):
@@ -176,32 +179,3 @@ def get_zero_ket(n):
 
 def gate_factory(name, value):
     return SimpleGate(name, value)
-
-#
-# cz = np.array([
-#     [1, 0, 0, 0],
-#     [0, 1, 0, 0],
-#     [0, 0, 1, 0],
-#     [0, 0, 0, -1]
-# ])
-#
-# czb = np.array([
-#     [0.9, 0, 0, 0],
-#     [0, 1.1, 0, 0],
-#     [0, 0, 0.98, 0],
-#     [0, 0, 0, -0.99]
-# ])
-# a = np.array([
-#     [1, 0, 0, 0],
-#     [0, 1, 0, 0],
-#     [0, 0, 1, 0],
-#     [0, 0, 0, 0]
-# ])
-# def machGates():
-#     allGates = genAllGates()
-#     # for g in allGates:
-#     #     e = g[3][3]
-#     #     if abs(e) - 1 < 0.1 and e < 0 :
-#     #         print(roundVec(g,3))
-#
-# machGates()

@@ -86,16 +86,3 @@ def apply_two_qubit_gate(gate, n_qubits, c_qubit, x_qubit):
     tensor_zero_state = tensor_arr(zero_state_arr)
     tensor_one_state = tensor_arr(one_state_arr)
     return np.add(tensor_zero_state, tensor_one_state)
-
-
-# todo remove
-# # 1 2
-# # i_tensor_zero = fun.tensor_all([I.get_value(), bra_ket_zero, I.get_value()])
-# # ii_tensor_zero = fun.tensor_all([X.get_value(), bra_ket_one, I.get_value(),])
-#
-# # 0 1
-# # i_tensor_zero = fun.tensor_all([I.get_value(), I.get_value(), bra_ket_zero])
-# # ii_tensor_zero = fun.tensor_all([I.get_value(),X.get_value(), bra_ket_one])
-# # 0 2
-# # i_tensor_zero = fun.tensor_all([I.get_value(), I.get_value(), bra_ket_zero])
-# # ii_tensor_zero = fun.tensor_all([X.get_value(), I.get_value(), bra_ket_one])
