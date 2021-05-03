@@ -2,13 +2,15 @@ import git.Bakalaurinis.simuliator.simuliator as sim
 from git.Bakalaurinis.simuliator.gates import X, I, H, Z, Y, SimpleGate
 from git.Bakalaurinis.simuliator.gates import rx_gate, ry_gate, rz_gate, u_gate, p_gate
 import numpy as np
+import pandas as pd
 import re
 
 
-class QASMParser:
-    def __init__(self, qasm_str):
+class QASMTranslator:
+    def __init__(self, qasm_str, q_noise = None):
         self.qasm_str = qasm_str
         self.qasm_arr = qasm_str.split('\n')
+        self.q_noise = q_noise
 
         self._n_q = None
         self._simulator = None
@@ -54,11 +56,12 @@ class QASMParser:
 
     def _parse_qreg_statement(self, qasm_word_arr):
         self._n_q = int(self._parse_square_bracket_content(qasm_word_arr[1])[0])
-        self._simulator = sim.Simuliator(self._n_q)
+        self._simulator = sim.Simuliator(self._n_q, self.q_noise)
 
     def _parse_creg_statement(self, qasm_word_arr):
         # only all register measurement supported
-        statement = "creg"
+        for i in range(0, self._n_q):
+            self._add_statement((i, I))
 
     def _extract_theta(self, qasm_word) -> float:
         theta = self._parse_round_bracket_content(qasm_word)[0]
@@ -136,7 +139,7 @@ class QASMParser:
         q = self._extract_q(qasm_word_arr[1])
         self._add_statement((q, Z))
 
-    def _parse_measure_statement(self):
+    def _parse_measure_statement(self, qasm_word_arr):
         # only all register measurement supported
         if not self._measured:
             self._measured = True
@@ -184,3 +187,23 @@ class QASMParser:
 
     def get_simulator(self) -> sim.Simuliator:
         return self._simulator
+
+
+def simulate_one(q, noise_dic = None) -> np.array:
+    (qr, cr, qc) = q
+    s = QASMTranslator(qc.qasm(), noise_dic).get_simulator()
+    s_dic = s.get_results_as_dic()
+    s_arr = list(map(lambda k: s_dic[k][0], s_dic.keys()))
+    return np.array(s_arr)
+
+
+def simulate_all(q_arr, noise_dic) -> pd.DataFrame:
+    all_dic = {}
+    for i, q in enumerate(q_arr):
+        (qr, cr, qc) = q
+        s = QASMTranslator(qc.qasm(), noise_dic).get_simulator()
+        s_dic = s.get_results_as_dic()
+        s_arr = list(map(lambda k: s_dic[k][0],  s_dic.keys()))
+        all_dic[i] = s_arr
+    df = pd.DataFrame(data=all_dic)
+    return df
