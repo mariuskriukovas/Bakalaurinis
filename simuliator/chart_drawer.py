@@ -26,7 +26,16 @@ def draw_bar_chart(df, y_label="", title=""):
     # plt.xticks(y_pos, objects)
     # plt.ylabel(y_label)
     plt.title(title)
-    # plt.show()
+    plt.show()
+
+
+def draw_simple_plot(df, title = None):
+    my_colors = ['blue', 'green', 'red', 'black', ]
+    pic = df.plot(title=f'{title}', kind='line', lw=1, fontsize=6,
+                  color=my_colors,
+                  use_index=True)
+
+    plt.show()
 
 
 class bcolors:

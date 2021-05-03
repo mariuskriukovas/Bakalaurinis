@@ -2,6 +2,7 @@ import numpy as np
 
 ROUND = 8
 
+
 class Gate:
     def __init__(self, name, formula):
         self.name = name
@@ -67,6 +68,40 @@ def init_p_gate():
     return Gate("P", gate)
 
 
+def init_N_amp_gate():
+    def gate(lamb):
+        gt = np.array([
+            [0, 1],
+            [0, 0],
+        ])
+        gt = np.sqrt(lamb) * gt
+        return gt
+
+    return Gate("Na", gate)
+
+
+def init_N_phase_gate():
+    def gate(lamb):
+        gt = np.array([
+            [1, 0],
+            [0, -1],
+        ])
+        gt = np.sqrt(lamb) * gt
+        return gt
+
+    return Gate("Np", gate)
+
+def init_N_x_gate():
+    def gate(lamb):
+        gt = np.array([
+             [1, 0],
+             [0, 1]
+        ])
+        gt = np.sqrt(lamb) * gt
+        return gt
+
+    return Gate("NX", gate)
+
 def init_u_gate():
     def gate(par):
         (teta, fi, lamb) = par
@@ -87,6 +122,10 @@ rz_gate = init_rz_gate()
 p_gate = init_p_gate()
 u_gate = init_u_gate()
 
+na_gate = init_N_amp_gate()
+np_gate = init_N_phase_gate()
+
+nx_gate = init_N_x_gate()
 
 class SimpleGate:
     def __init__(self, name, value):
@@ -98,6 +137,13 @@ class SimpleGate:
 
     def get_name(self):
         return self.name
+
+    def apply_noise(self, noise_gate):
+        print(self.value)
+        print(noise_gate.get_value())
+        self.value = np.matmul(noise_gate.get_value(),
+                               self.value)
+        print(self.value)
 
     def print(self):
         print("<----------------------->")
@@ -177,5 +223,31 @@ def get_zero_ket(n):
     return zero
 
 
-def gate_factory(name, value):
-    return SimpleGate(name, value)
+def gate_factory(gate, value):
+    return SimpleGate(gate.get_adjusted_name(value),
+                      gate.get_value(value))
+
+
+x_gamma = 1
+i_gamma = 1
+h_gamma = 1
+z_gamma = 1
+y_gamma = 1
+Rx_gamma = 1
+Ry_gamma = 1
+Rz_gamma = 1
+U_gamma = 1
+P_gamma = 1
+
+noise_dic = {
+    'X': x_gamma,
+    'I': i_gamma,
+    'H': h_gamma,
+    'Z': z_gamma,
+    'Y': y_gamma,
+    'Rx': Rx_gamma,
+    'Ry': Ry_gamma,
+    'Rz': Rz_gamma,
+    'U': U_gamma,
+    'P': P_gamma,
+}
