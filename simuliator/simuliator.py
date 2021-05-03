@@ -13,7 +13,7 @@ from git.Bakalaurinis.simuliator.math import tensor_arr, mul_arr, find_prob, app
 
 
 class Simuliator:
-    def __init__(self, n):
+    def __init__(self, n, noise = None):
         self.n_qbits = n
         self.gates = []
         self._iteration = 0
@@ -23,10 +23,12 @@ class Simuliator:
         self.results = None
         self._tensors = []
 
+        self._noise = noise
+
         for i in range(0, n):
             self.gates.append([])
 
-        print(bcolors.FAIL, "init", "--->", self.n_qbits, bcolors.ENDC)
+        # print(bcolors.FAIL, "init", "--->", self.n_qbits, bcolors.ENDC)
 
     @staticmethod
     def _rise_wring_gate_exeption(string):
@@ -62,8 +64,8 @@ class Simuliator:
             self._rise_wring_gate_exeption("still left")
 
     def add_multi_gates(self, gate, c_qubit, v_qubit):
-        print("add gate ", "--->", "C" + gate.get_name() + " c : " + str(c_qubit) + " v : " + str(v_qubit))
-        print("iteration ", "--->", self._iteration)
+        # print("add multi gate ", "--->", "C" + gate.get_name() + " c : " + str(c_qubit) + " v : " + str(v_qubit))
+        # print("iteration ", "--->", self._iteration)
         tensor = apply_two_qubit_gate(gate, self.n_qbits, c_qubit, v_qubit)
 
         g_arr = [(c_qubit, C), (v_qubit, gate)]
@@ -72,9 +74,21 @@ class Simuliator:
         self._tensors.append(tensor)
         self._iteration += 1
 
+    def _apply_noise(self, g_arr):
+        n_g_arr = []
+        if self._noise is not None:
+            for key in self._noise.keys():
+                for g in g_arr:
+                    (pos, gate) = g
+                    if gate.get_name().find(key) == 0:
+                        n_g_arr.append((pos, self._noise[key]))
+        return n_g_arr
+
     def add_single_gates(self, g_arr):
-        print("add gate ", "--->", self._print_gate_arr(g_arr))
-        print("iteration ", "--->", self._iteration)
+        # print("add single gates ", "--->", self._print_gate_arr(g_arr))
+        # print("iteration ", "--->", self._iteration)
+
+        nois_copy = g_arr.copy()
 
         self._append_gates(g_arr)
         gates = []
@@ -82,6 +96,10 @@ class Simuliator:
             gates.append(self.gates[i][self._iteration].get_value())
         self._tensors.append(tensor_arr(gates))
         self._iteration += 1
+
+        noise_arr = self._apply_noise(nois_copy)
+        if len(noise_arr) > 0:
+            self.add_single_gates(noise_arr)
 
     def gates_to_df(self):
         dic = {}
@@ -100,6 +118,12 @@ class Simuliator:
         return list(map(lambda x: [x], zero))
 
     def measure(self):
+        if 'M' in  self._noise:
+            g_arr = []
+            for i in range(0, self.n_qbits):
+                g_arr.append((i, self._noise['M']))
+            self.add_single_gates(g_arr)
+
         self.ket_zero = self._get_zero_state_vector()
         self.transition_matrix = self._count_transition_matrix()
         self.final_state = mul_arr([self.transition_matrix, self.ket_zero])
@@ -108,6 +132,9 @@ class Simuliator:
         prob = find_prob(self.final_state)
         for i in range(0, len(prob)):
             self.results[str(i)] = [prob[i]]
+
+    def get_results_as_dic(self) -> dict:
+        return self.results
 
     def get_results(self) -> pd.DataFrame:
         return pd.DataFrame(data=self.results)
