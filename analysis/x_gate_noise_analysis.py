@@ -1,20 +1,10 @@
 import numpy as np
 import pandas as pd
-from scipy import stats
 import matplotlib.pyplot as plt
 
 from git.Bakalaurinis.simuliator.chart_drawer import draw_simple_plot
-
+from git.Bakalaurinis.simuliator.math import count_linear_regresion
 from git.Bakalaurinis.tools.excel_tools import write_to_excel, append_excel_sheets, get_excel_sheets
-
-def count_linear_regresion(df):
-    df = df.dropna()
-    x = df.index.to_numpy()[::-1]
-    y = df.to_numpy()
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    # print(slope, intercept, r_value, p_value, std_err)
-    return intercept
-
 
 def quito_x_noise_results():
     name = 'Sheet_Quito_X_Noise_aprox'

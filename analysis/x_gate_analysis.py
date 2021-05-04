@@ -35,8 +35,8 @@ def extract_most_probable_values():
     }
 
     noise_yorktown_dic = {
-        'M': gate_factory(ry_gate, 0.42),
-        'X': gate_factory(rx_gate, 0.544036),
+        'M': gate_factory(rx_gate, 0.279535050537985),
+        'X': gate_factory(rx_gate, 0.3902920353982303),
     }
 
     df_dic = {'Local': sheets['Sheet_local_X'],
