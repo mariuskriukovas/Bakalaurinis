@@ -14,7 +14,7 @@ def draw_circuit_scheme(df, y_label="", title=""):
 
     fig, ax = plt.subplots()
     ax = sns.heatmap(df_val, annot=df, fmt='')
-    # plt.show()
+    plt.show()
 
 
 def draw_bar_chart(df, y_label="", title=""):

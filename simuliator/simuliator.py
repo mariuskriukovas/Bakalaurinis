@@ -22,6 +22,7 @@ class Simuliator:
         self.final_state = None
         self.results = None
         self._tensors = []
+        self._measurement = False
 
         self._noise = noise
 
@@ -117,17 +118,21 @@ class Simuliator:
         zero[0] = 1
         return list(map(lambda x: [x], zero))
 
-    def measure(self):
-        if 'M' in  self._noise:
-            g_arr = []
-            for i in range(0, self.n_qbits):
-                g_arr.append((i, self._noise['M']))
-            self.add_single_gates(g_arr)
+    def set_measurement(self, measure):
+        self._measurement = measure
 
+
+    def measure(self):
         self.ket_zero = self._get_zero_state_vector()
+        self.results = {}
+
+        if not self._measurement:
+            for i in range(0, len(self.ket_zero)):
+                self.results[str(i)] = [self.ket_zero[i]]
+            return
+
         self.transition_matrix = self._count_transition_matrix()
         self.final_state = mul_arr([self.transition_matrix, self.ket_zero])
-        self.results = {}
 
         prob = find_prob(self.final_state)
         for i in range(0, len(prob)):

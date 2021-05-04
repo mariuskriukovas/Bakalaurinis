@@ -4,12 +4,12 @@ from numpy.linalg import inv
 import functools
 from git.Bakalaurinis.simuliator.gates import X, I, H, Z
 import ibm.myMath.fun as fun  # todo del
+from scipy import stats
 
 
 # todo kazkas lagina su vartais
-
-
 # todo make more efection
+
 def tensor_mul(a, b):
     tensor = np.tensordot(a, b, 0)
     v = []
@@ -86,3 +86,39 @@ def apply_two_qubit_gate(gate, n_qubits, c_qubit, x_qubit):
     tensor_zero_state = tensor_arr(zero_state_arr)
     tensor_one_state = tensor_arr(one_state_arr)
     return np.add(tensor_zero_state, tensor_one_state)
+
+
+def count_linear_regresion(df):
+    df = df.dropna()
+    x = df.index.to_numpy()[::-1]
+    y = df.to_numpy()
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+    # print(slope, intercept, r_value, p_value, std_err)
+    return intercept
+
+
+BIG_EPSILON = 0.001
+def find_best_value(min_value, max_value, epsilon, atol_val, experiment):
+    i = min_value
+    lover_bound = None
+    upper_bound = None
+    result = None
+    while i < max_value:
+        is_close = experiment(i, atol_val)
+        # print("I = ", i)
+        # print("close: DATA == EXPERIMENT", is_close)
+        if is_close:
+            lover_bound = i
+
+        if not is_close and (lover_bound is not None):
+            upper_bound = i
+
+        if lover_bound and upper_bound:
+            if epsilon <= BIG_EPSILON:
+                # print("epsilon", epsilon)
+                # print("lover_bound", lover_bound, "upper_bound", upper_bound, "i", i)
+                return i
+            else:
+                # print("lover_bound", lover_bound, "upper_bound", upper_bound, "i", i)
+                return find_best_value(lover_bound, upper_bound, epsilon / 10, atol_val / 1.01, experiment)
+        i += epsilon

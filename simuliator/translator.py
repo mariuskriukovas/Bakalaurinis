@@ -1,5 +1,5 @@
 import git.Bakalaurinis.simuliator.simuliator as sim
-from git.Bakalaurinis.simuliator.gates import X, I, H, Z, Y, SimpleGate
+from git.Bakalaurinis.simuliator.gates import X, I, H, Z, Y, M, SimpleGate
 from git.Bakalaurinis.simuliator.gates import rx_gate, ry_gate, rz_gate, u_gate, p_gate
 import numpy as np
 import pandas as pd
@@ -15,7 +15,6 @@ class QASMTranslator:
         self._n_q = None
         self._simulator = None
         self._statements_arr = []
-        self._measured = False
 
         self._parse_qasm()
 
@@ -140,9 +139,9 @@ class QASMTranslator:
         self._add_statement((q, Z))
 
     def _parse_measure_statement(self, qasm_word_arr):
-        # only all register measurement supported
-        if not self._measured:
-            self._measured = True
+        q = self._extract_q(qasm_word_arr[1])
+        self._add_statement((q, M))
+        self._simulator.set_measurement(True)
 
     def _parse_dictionary(self):
         return {
@@ -182,8 +181,7 @@ class QASMTranslator:
         if len(self._statements_arr) > 0:
             self._simulator.add_single_gates(self._statements_arr)
 
-        if self._measured:
-            self._simulator.measure()
+        self._simulator.measure()
 
     def get_simulator(self) -> sim.Simuliator:
         return self._simulator
@@ -191,6 +189,7 @@ class QASMTranslator:
 
 def simulate_one(q, noise_dic = None) -> np.array:
     (qr, cr, qc) = q
+    # print(qc.qasm())
     s = QASMTranslator(qc.qasm(), noise_dic).get_simulator()
     s_dic = s.get_results_as_dic()
     s_arr = list(map(lambda k: s_dic[k][0], s_dic.keys()))

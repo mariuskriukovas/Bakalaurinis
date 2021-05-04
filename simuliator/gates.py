@@ -184,6 +184,7 @@ I = np.array([
     [0, 1],
 ])
 
+M = SimpleGate('M', I)
 I = SimpleGate('I', I)
 C = SimpleGate('C', I)
 
@@ -214,7 +215,6 @@ Y = np.array(
 )
 
 Y = SimpleGate('Y', Y)
-
 
 def get_zero_ket(n):
     zero = np.array([1])
