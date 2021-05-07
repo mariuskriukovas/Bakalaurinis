@@ -1,5 +1,5 @@
 from git.Bakalaurinis.tools.excel_tools import append_excel_sheets
-from git.Bakalaurinis.experiments.single_gate_noise_experiment import execute_experiment, execute_rotation_experiment
+from git.Bakalaurinis.experiments.single_gate_noise_calculation import execute_experiment, execute_rotation_experiment
 import git.Bakalaurinis.experiments.noise_dictionaries as noise_dict
 
 from git.Bakalaurinis.experiments.cx_experiment import prepare_cx_gate_experiment

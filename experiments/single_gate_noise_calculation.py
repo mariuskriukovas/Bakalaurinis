@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from git.Bakalaurinis.experiments.x_gate_experiment import prepare_x_gate_experiment
-from git.Bakalaurinis.simuliator.gates import np_gate, na_gate, gate_factory
-from git.Bakalaurinis.simuliator.gates import X, I, rx_gate, rz_gate, ry_gate
 from git.Bakalaurinis.simuliator.translator import simulate_one
-from git.Bakalaurinis.tools.excel_tools import write_to_excel, append_excel_sheets, get_excel_sheets
-from git.Bakalaurinis.simuliator.chart_drawer import draw_simple_plot
+from git.Bakalaurinis.tools.excel_tools import get_excel_sheets
 
 BIG_EPSILON = 0.001
 
@@ -37,28 +33,17 @@ def find_best_value(min_value, max_value, epsilon, atol_val, experiment):
         i += epsilon
 
 
-def experiment(real_value, test_gate, shape, i, atol_val):
-    noise_dic = {
-        'I': gate_factory(ry_gate, 0.1913),
-        'X': gate_factory(rx_gate, i),
-    }
-    experiment_res = simulate_one(test_gate, noise_dic)
-    # print("DATA", real_value.shape)
-    # print("EXPERIMENT", experiment_res.shape)
-    # print(np.isclose(real_value, experiment_res, atol=atol_val).sum() )
-    is_close = np.isclose(real_value, experiment_res, atol=atol_val).sum() == shape
-    return is_close
-
-
-def execute_experiment(name):
+def execute_experiment(name,
+                       experiments,
+                       noise_dictionary):
     sheets = get_excel_sheets([name])
     DATA = sheets[name]
-    experiments = prepare_x_gate_experiment()
+    # experiments = prepare_experiment()
     shape = DATA[0].shape
-
+    print(shape)
     atol_val = 0.01
     dic_val = {}
-    while atol_val < 0.06:
+    while atol_val < 0.04:
         best_arr = []
 
         for i, d in enumerate(experiments):
@@ -66,7 +51,8 @@ def execute_experiment(name):
             e = experiments[i]
 
             def current_experiment(i, atol_val):
-                return experiment(real_data, e, shape, i, atol_val)
+                noise_dic = noise_dictionary(i)
+                return np.isclose(real_data, simulate_one(e, noise_dic), atol=atol_val).sum() == shape
 
             best = find_best_value(
                 min_value=0,
@@ -83,10 +69,37 @@ def execute_experiment(name):
     return pd.DataFrame(data=dic_val)
 
 
-# df = execute_experiment(name='Sheet_quito_X')
-# df = execute_experiment(name='Sheet_yorktown_X')
-# append_excel_sheets(df_arr=[df],
-#                     df_names=["Yorktown_X_Noise_aprox_test"])
-# print(df.notnull().count(axis=1))
-# print("Vidurkis : ", df.dropna().mean())
-# draw_simple_plot(df.dropna())
+def execute_rotation_experiment(name,
+                                experiments,
+                                noise_dictionary):
+    sheets = get_excel_sheets([name])
+    DATA = sheets[name]
+    # experiments = prepare_experiment()
+    shape = DATA[0].shape
+    print(shape)
+    atol_val = 0.01
+    dic_val = {}
+    while atol_val < 0.04:
+        best_arr = []
+
+        for i, d in enumerate(experiments):
+            real_data = DATA[i].to_numpy()
+            e = experiments[i]
+
+            best = None
+            j = - (np.pi / 2)
+            while j < (np.pi / 2):
+                noise_dic = noise_dictionary(j)
+                experiment_res = simulate_one(e, noise_dic)
+                is_close = np.isclose(real_data, experiment_res, atol=atol_val).sum() == shape
+                if is_close:
+                    best = j
+                    break
+                j += 0.01
+            best_arr.append(best)
+            print("i = ", i, "atol = ", atol_val, " Best ---> ", best)
+            dic_val[atol_val] = best_arr
+
+        atol_val += 0.01
+
+    return pd.DataFrame(data=dic_val)
