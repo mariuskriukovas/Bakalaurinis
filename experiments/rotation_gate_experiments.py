@@ -32,7 +32,7 @@ def prepare_rx_gate_experiment():
 def init_ry_gates(n, theta, q):
     (qr, cr, qc) = q
     b_n = bin(n)[2:]
-    print(b_n)
+    # print(b_n)
     for i, x in enumerate(reversed(b_n)):
         if x == '1':
             qc.ry(theta, qr[i])
@@ -41,7 +41,7 @@ def init_ry_gates(n, theta, q):
 def init_rz_gates(n, theta, q):
     (qr, cr, qc) = q
     b_n = bin(n)[2:]
-    print(b_n)
+    # print(b_n)
     for i, x in enumerate(reversed(b_n)):
         if x == '1':
             qc.h(qr[i])
@@ -52,7 +52,7 @@ def init_rz_gates(n, theta, q):
 def init_p_gates(n, theta, q):
     (qr, cr, qc) = q
     b_n = bin(n)[2:]
-    print(b_n)
+    # print(b_n)
     for i, x in enumerate(reversed(b_n)):
         if x == '1':
             qc.h(qr[i])
@@ -75,61 +75,102 @@ def prepare_rotation_experiment(experiment):
     return q_arr
 
 
-def apply_rotation_gate_local_experiment():
-    exp_arr = prepare_rotation_experiment(init_ry_gates)
-    back.simulate_local_all(exp_arr, "ry_gate_local", "ry")
-
-    exp_arr = prepare_rotation_experiment(init_rz_gates)
-    back.simulate_local_all(exp_arr, "rz_gate_local", "rz")
-
-    exp_arr = prepare_rotation_experiment(init_p_gates)
-    back.simulate_local_all(exp_arr, "p_gate_local", "p")
-
-
-# apply_rotation_gate_local_experiment()
-
-def apply_rotation_gate_yorktown_experiment():
-    exp_arr = prepare_rotation_experiment(init_ry_gates)
-    back.simulate_on_yorktown_all(exp_arr, "ry_gate_yorktown", "ry")
-
-    exp_arr = prepare_rotation_experiment(init_rz_gates)
-    back.simulate_on_yorktown_all(exp_arr, "rz_gate_yorktown", "rz")
-
-    exp_arr = prepare_rotation_experiment(init_p_gates)
-    back.simulate_on_yorktown_all(exp_arr, "p_gate_yorktown", "p")
+def prepare_rotation_experiment_interval(experiment):
+    q_arr = []
+    theta = 0
+    all_gates = 2 ** 5 - 1
+    while theta < 2 * np.pi:
+        q = init_reg(5)
+        # print(theta)
+        experiment(all_gates, theta, q)
+        measure_all(q)
+        q_arr.append(q)
+        theta += np.pi / 20
+    return q_arr
 
 
-# apply_rotation_gate_yorktown_experiment()
-
-def apply_rotation_gate_quito_experiment():
-    exp_arr = prepare_rotation_experiment(init_ry_gates)
-    back.simulate_quito_all(exp_arr, "ry_gate_quito", "ry")
-
-    exp_arr = prepare_rotation_experiment(init_rz_gates)
-    back.simulate_quito_all(exp_arr, "rz_gate_quito", "rz")
-
-    exp_arr = prepare_rotation_experiment(init_p_gates)
-    back.simulate_quito_all(exp_arr, "p_gate_quito", "p")
-
-
-# apply_rotation_gate_quito_experiment()
-
-def apply_rx_gate_local_experiment():
-    exp_arr = prepare_rx_gate_experiment()
-    back.simulate_local_all(exp_arr, "rx_gate_local", "rx")
+def prepare_n_rotation_experiment_interval(experiment):
+    q_arr = []
+    theta = -1 * 2 * np.pi
+    all_gates = 2 ** 5 - 1
+    while theta < 0:
+        q = init_reg(5)
+        # print(theta)
+        experiment(all_gates, theta, q)
+        measure_all(q)
+        q_arr.append(q)
+        theta += np.pi / 20
+    return q_arr
 
 
-# apply_rx_gate_local_experiment()
+def prepare_full_rotation_experiment_in_interval(init_gates):
+    a = prepare_n_rotation_experiment_interval(init_gates)
+    b = prepare_rotation_experiment_interval(init_gates)
+    return np.concatenate([a, b])
 
-def apply_rx_gate_yorktown_experiment():
-    exp_arr = prepare_rx_gate_experiment()
-    back.simulate_on_yorktown_all(exp_arr, "rx_gate_yorktown", "rx")
+
+# prepare_all_n_rotation_experiment_interval()
+
+def apply_rx_full_quito_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rx_gates)
+    back.simulate_quito_all(exp_arr, "f_rx_gate_quito", "rx")
 
 
-# apply_rx_gate_yorktown_experiment()
+def apply_ry_full_quito_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_ry_gates)
+    back.simulate_quito_all(exp_arr, "f_ry_gate_quito", "ry")
 
-def apply_rx_gate_quito_experiment():
-    exp_arr = prepare_rx_gate_experiment()
-    back.simulate_quito_all(exp_arr, "rx_gate_quito", "rx")
 
-# apply_rx_gate_quito_experiment()
+def apply_rz_full_quito_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rz_gates)
+    back.simulate_quito_all(exp_arr, "f_rz_gate_quito", "rz")
+
+
+def apply_p_full_quito_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_p_gates)
+    back.simulate_quito_all(exp_arr, "f_p_gate_quito", "p")
+
+
+# ---------------------------------------------------------------------
+# apply_rx_full_quito_experiment()
+
+def apply_rx_full_yorktown_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rx_gates)
+    back.simulate_on_yorktown_all(exp_arr, "f_rx_gate_yorktown", "rx")
+
+
+def apply_ry_full_yorktown_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_ry_gates)
+    back.simulate_on_yorktown_all(exp_arr, "f_ry_gate_yorktown", "ry")
+
+
+def apply_rz_full_yorktown_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rz_gates)
+    back.simulate_on_yorktown_all(exp_arr, "f_rz_gate_yorktown", "rz")
+
+
+def apply_p_full_yorktown_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_p_gates)
+    back.simulate_on_yorktown_all(exp_arr, "f_p_gate_yorktown", "p")
+
+
+# ---------------------------------------------------------------------
+
+def apply_rx_full_local_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rx_gates)
+    back.simulate_local_all(exp_arr, "f_rx_gate_local", "rx")
+
+
+def apply_ry_full_local_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_ry_gates)
+    back.simulate_local_all(exp_arr, "f_ry_gate_local", "ry")
+
+
+def apply_rz_full_local_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_rz_gates)
+    back.simulate_local_all(exp_arr, "f_rz_gate_local", "rz")
+
+
+def apply_p_full_local_experiment():
+    exp_arr = prepare_full_rotation_experiment_in_interval(init_p_gates)
+    back.simulate_local_all(exp_arr, "f_p_gate_local", "p")
