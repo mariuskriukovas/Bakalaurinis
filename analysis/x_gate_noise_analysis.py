@@ -14,7 +14,8 @@ def quito_x_noise_results():
     i = 0.01
     while i <= 0.04:
         df = quito[i].dropna()
-        res = count_linear_regresion(df)
+        slope, intercept, r_value, p_value, std_err = count_linear_regresion(df)
+        res = intercept
         n_arr.append(res)
         # print(res)
         i += 0.01
@@ -28,7 +29,8 @@ def yorktown_x_noise_results():
     i = 0.02
     while i <= 0.05:
         df = quito[i].dropna()
-        res = count_linear_regresion(df)
+        slope, intercept, r_value, p_value, std_err  = count_linear_regresion(df)
+        res = intercept
         n_arr.append(res)
         # print(res)
         i += 0.01
