@@ -2,20 +2,21 @@ import git.Bakalaurinis.tools.backend_service as back
 from git.Bakalaurinis.tools.circ_fun import init_reg
 
 
-def init_measurement_gates(n, q):
+def init_gates(n):
+    q = init_reg(5)
     (qr, cr, qc) = q
     b_n = bin(n)[2:]
     print(b_n)
     for i, x in enumerate(reversed(b_n)):
         if x == '1':
             qc.measure(qr[i], cr[i])
+    return (qr, cr, qc)
 
 
 def prepare_measurement_gate_experiment():
     q_arr = []
     for i in range(0, 2 ** 5):
-        q = init_reg(5)
-        init_measurement_gates(i, q)
+        q = init_gates(i)
         q_arr.append(q)
         # (qr, cr, qc) = q
         # tools.simulate_and_show_result(qc, title="test")

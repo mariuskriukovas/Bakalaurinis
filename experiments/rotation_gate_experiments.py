@@ -143,6 +143,7 @@ def apply_ry_full_yorktown_experiment():
     exp_arr = prepare_full_rotation_experiment_in_interval(init_ry_gates)
     back.simulate_on_yorktown_all(exp_arr, "f_ry_gate_yorktown", "ry")
 
+# apply_ry_full_yorktown_experiment()
 
 def apply_rz_full_yorktown_experiment():
     exp_arr = prepare_full_rotation_experiment_in_interval(init_rz_gates)
