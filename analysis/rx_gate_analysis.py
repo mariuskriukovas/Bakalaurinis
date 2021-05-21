@@ -43,7 +43,9 @@ def rx_gate_analysis():
 
     df = extract_most_probable_values(df_dic)
     print(df)
-    plot_gate_results(df, "RX vartų eksperimento nuo labiausiai tikėtino rezultato")
+    n_df = pd.DataFrame(data={'Quito': df['Quito'], 'Yorktown': df['Yorktown'], 'Qiskit': df['Qiskit']})
+    n_df= n_df.loc[: 192]
+    plot_gate_results(n_df, "RX vartų nuokrypiai nuo labiausiai tikėtinos būsenos")
     names_arr = ['Quito', 'Yorktown', 'Sim_Quito', 'Sim_Yorktown']
     df_dis = count_distribution_between_gates(df, names_arr)
     plot_single_gate_results(df_dis, "RX vartų nuokrypiu vidurkiai")
