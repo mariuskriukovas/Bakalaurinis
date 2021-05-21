@@ -1,7 +1,7 @@
 import numpy as np
+from git.Bakalaurinis.simuliator.math import mul_arr
 
 ROUND = 8
-
 
 class Gate:
     def __init__(self, name, formula):
@@ -27,7 +27,7 @@ class Gate:
 def init_rx_gate():
     def gate(psi):
         Rx = np.array([
-            [np.round(np.cos(psi / 2), ROUND), (np.round(-np.sin(psi / 2), ROUND)) * (-1j)],
+            [np.round(np.cos(psi / 2), ROUND), (np.round(np.sin(psi / 2), ROUND)) * (-1j)], #LOX
             [(np.round(np.sin(psi / 2), ROUND)) * (-1j), np.round(np.cos(psi / 2), ROUND), ],
         ])
         return Rx
@@ -91,21 +91,22 @@ def init_N_phase_gate():
 
     return Gate("Np", gate)
 
+
 def init_N_x_gate():
     def gate(lamb):
         gt = np.array([
-             [1, 0],
-             [0, 1]
+            [1, 0],
+            [0, 1]
         ])
         gt = np.sqrt(lamb) * gt
         return gt
 
     return Gate("NX", gate)
 
+
 def init_u_gate():
     def gate(par):
         (teta, fi, lamb) = par
-
         gt = np.array([
             [np.cos(teta / 2), -1 * np.round(np.exp(((lamb) * (1j))), ROUND) * np.sin(teta / 2), ],
             [np.round(np.exp(((fi) * (1j))), ROUND) * np.sin(teta / 2),
@@ -120,12 +121,74 @@ rx_gate = init_rx_gate()
 ry_gate = init_ry_gate()
 rz_gate = init_rz_gate()
 p_gate = init_p_gate()
+
+
+# U1(λ)=eiλ/2RZ(λ)
+def init_u1_gate():
+    def gate(par):
+        (lamb) = par
+        gt = np.round(np.exp((((lamb) * (1j)) / 2)), ROUND) * rz_gate.get_value(lamb)
+        # gt = np.array([
+        #     [1, 0 ],
+        #     [0 , np.round(np.exp(((lamb) * (1j))), ROUND)],
+        # ])
+
+        return gt
+
+    return Gate("U1", gate)
+
+
+def init_u2_gate():
+    def gate(par):
+        (fi, lamb) = par
+        gt = mul_arr([
+            rz_gate.get_value(fi),
+            ry_gate.get_value(np.pi / 2),
+            rz_gate.get_value(lamb)])
+
+        # gt = (1/np.sqrt(2)) * np.array([
+        #     [ 1 , -1 * np.round(np.exp(((lamb) * (1j))), ROUND)   ],
+        #     [np.round(np.exp(((fi) * (1j))), ROUND) , np.round(np.exp(((fi + lamb) * (1j))), ROUND)],
+        # ])
+
+        return gt
+
+    return Gate("U2", gate)
+
+
+# U3(θ,ϕ,λ)=RZ(ϕ)RX(−π/2)RZ(θ)RX(π/2)RZ(λ)
+def init_u3_gate():
+    def gate(par):
+        (teta, fi, lamb) = par
+        # ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+        gt = mul_arr([
+            rz_gate.get_value(fi),
+            rx_gate.get_value(-np.pi / 2),
+            rz_gate.get_value(teta),
+            rx_gate.get_value(np.pi / 2),
+            rz_gate.get_value(lamb)]
+        )
+
+        # gt = np.array([
+        #     [np.cos(teta / 2), -1 * np.round(np.exp(((lamb) * (1j))), ROUND) * np.sin(teta / 2), ],
+        #     [np.round(np.exp(((fi) * (1j))), ROUND) * np.sin(teta / 2),
+        #      np.round(np.exp(((fi + lamb) * (1j))), ROUND) * np.cos(teta / 2)],
+        # ])
+
+        return gt
+
+    return Gate("U3", gate)
+
+
 u_gate = init_u_gate()
+u1_gate = init_u1_gate()
+u2_gate = init_u2_gate()
+u3_gate = init_u3_gate()
 
 na_gate = init_N_amp_gate()
 np_gate = init_N_phase_gate()
-
 nx_gate = init_N_x_gate()
+
 
 class SimpleGate:
     def __init__(self, name, value):
@@ -216,6 +279,7 @@ Y = np.array(
 
 Y = SimpleGate('Y', Y)
 
+
 def get_zero_ket(n):
     zero = np.array([1])
     for i in range(1, n):
@@ -224,30 +288,5 @@ def get_zero_ket(n):
 
 
 def gate_factory(gate, value):
-    return SimpleGate(gate.get_adjusted_name(value),
+    return SimpleGate(f'Nois({gate.get_adjusted_name(value)})',
                       gate.get_value(value))
-
-
-x_gamma = 1
-i_gamma = 1
-h_gamma = 1
-z_gamma = 1
-y_gamma = 1
-Rx_gamma = 1
-Ry_gamma = 1
-Rz_gamma = 1
-U_gamma = 1
-P_gamma = 1
-
-noise_dic = {
-    'X': x_gamma,
-    'I': i_gamma,
-    'H': h_gamma,
-    'Z': z_gamma,
-    'Y': y_gamma,
-    'Rx': Rx_gamma,
-    'Ry': Ry_gamma,
-    'Rz': Rz_gamma,
-    'U': U_gamma,
-    'P': P_gamma,
-}

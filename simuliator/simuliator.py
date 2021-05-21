@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
 
+from qiskit.visualization import plot_histogram
 from git.Bakalaurinis.simuliator.chart_drawer import draw_bar_chart, draw_circuit_scheme, bcolors
-from git.Bakalaurinis.simuliator.gates import I, C
-from git.Bakalaurinis.simuliator.math import tensor_arr, mul_arr, find_prob, apply_two_qubit_gate
+from git.Bakalaurinis.simuliator.gates import I, C, SimpleGate
+from git.Bakalaurinis.simuliator.math import tensor_arr, mul_arr, find_prob, apply_two_qubit_gate, \
+    convert_to_normal_matrix
 
 
 # Paisdaryti korektiskai veikianti simuliatoriu - done
@@ -13,7 +15,7 @@ from git.Bakalaurinis.simuliator.math import tensor_arr, mul_arr, find_prob, app
 
 
 class Simuliator:
-    def __init__(self, n, noise = None):
+    def __init__(self, n, noise=None):
         self.n_qbits = n
         self.gates = []
         self._iteration = 0
@@ -67,12 +69,26 @@ class Simuliator:
     def add_multi_gates(self, gate, c_qubit, v_qubit):
         # print("add multi gate ", "--->", "C" + gate.get_name() + " c : " + str(c_qubit) + " v : " + str(v_qubit))
         # print("iteration ", "--->", self._iteration)
+        full_name = "C" + str(gate.get_name())
+
+        # if full_name in self._noise.keys():
+        #     noisy_gate_name = "N" + full_name
+        #     gate = SimpleGate(noisy_gate_name, mul_arr([gate.get_value(), self._noise[full_name].get_value()]))
+
         tensor = apply_two_qubit_gate(gate, self.n_qbits, c_qubit, v_qubit)
 
         g_arr = [(c_qubit, C), (v_qubit, gate)]
         self._append_gates(g_arr)
 
         self._tensors.append(tensor)
+
+        if full_name in self._noise.keys():
+            noisy_gate = self._noise[full_name]
+            tensor = apply_two_qubit_gate(noisy_gate, self.n_qbits, c_qubit, v_qubit)
+            self._tensors.append(tensor)
+            # g_arr = [(c_qubit, C), (v_qubit, noisy_gate)]
+            # self._append_gates(g_arr)
+
         self._iteration += 1
 
     def _apply_noise(self, g_arr):
@@ -121,7 +137,6 @@ class Simuliator:
     def set_measurement(self, measure):
         self._measurement = measure
 
-
     def measure(self):
         self.ket_zero = self._get_zero_state_vector()
         self.results = {}
@@ -144,11 +159,18 @@ class Simuliator:
     def get_results(self) -> pd.DataFrame:
         return pd.DataFrame(data=self.results)
 
-    def show_results(self):
-        df = pd.DataFrame(data=self.results)
-        draw_bar_chart(df)
 
-    def show_circuit(self):
+    def show_results_qiskit_graph(self, title="title"):
+        new_dic = {}
+        e = 0.000001
+        for k in self.results.keys():
+            state = self.results[k][0]
+            if state > e:
+                new_dic[k] = bytes((state * 1024))
+
+        plot_histogram(new_dic, title=title)
+
+    def show_circuit(self, title):
         len_cir = len(self.gates[0])
         dic = {}
         for i in range(0, len_cir):
@@ -157,4 +179,4 @@ class Simuliator:
                 dic[str(i)].append(self.gates[j][i].get_name())
 
         df = pd.DataFrame(data=dic)
-        draw_circuit_scheme(df)
+        draw_circuit_scheme(df, title=title)

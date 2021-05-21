@@ -2,18 +2,12 @@ import array_to_latex as a2l
 import numpy as np
 from numpy.linalg import inv
 import functools
-from git.Bakalaurinis.simuliator.gates import X, I, H, Z
-import ibm.myMath.fun as fun  # todo del
 from scipy import stats
 
 
-# todo kazkas lagina su vartais
-# todo make more efection
-
-def tensor_mul(a, b):
-    tensor = np.tensordot(a, b, 0)
+def convert_to_normal_matrix(m):
     v = []
-    for t in tensor:
+    for t in m:
         tBegin = t[0]
         for i in range(1, len(t)):
             tBegin = np.concatenate((tBegin, t[i]), axis=1)
@@ -23,6 +17,12 @@ def tensor_mul(a, b):
     for i in range(1, len(v)):
         answer = np.concatenate((answer, v[i]), axis=0)
     return answer
+
+def tensor_mul(a, b):
+    return np.kron(a,b)
+    # tensor = np.tensordot(a, b, 0)
+    # return convert_to_normal_matrix(tensor)
+
 
 
 def tensor_arr(t_arr):
@@ -51,74 +51,58 @@ def find_prob(v):
     return p
 
 
-def _bra_ket_zero():
-    ket_zero = fun.to_ket([1, 0])
+def map_to_arr(v):
+    return [v]
+
+
+def to_ket(ket):
+    return list(map(map_to_arr, ket))
+
+
+def _ket_bra_zero():
+    ket_zero = to_ket([1, 0])
     bra_zero = [1, 0]
     return np.outer(ket_zero, bra_zero)
 
 
-def _bra_ket_one():
-    ket_one = fun.to_ket([0, 1])
+def _ket_bra_one():
+    ket_one = to_ket([0, 1])
     bra_one = [0, 1]
     return np.outer(ket_one, bra_one)
 
 
-bra_ket_zero = _bra_ket_zero()
-bra_ket_one = _bra_ket_one()
+ket_bra_zero = _ket_bra_zero()
+ket_bra_one = _ket_bra_one()
 
 
 # I⊗|0⟩⟨0|+X⊗|1⟩⟨1|
 def apply_two_qubit_gate(gate, n_qubits, c_qubit, x_qubit):
-    zero_state_arr = []
-    one_state_arr = []
+    qc_arr = []
+    qx_arr = []
+
+    I = np.array([
+        [1, 0],
+        [0, 1],
+    ])
 
     for i in range(0, n_qubits):
-        zero_state_arr.append(I.get_value())
-        one_state_arr.append(I.get_value())
+        qc_arr.append(I)
+        qx_arr.append(I)
 
-    gate_pos = n_qubits - x_qubit - 1
+    qc_arr[n_qubits - c_qubit - 1] = ket_bra_zero
+    qx_arr[n_qubits - c_qubit - 1] = ket_bra_one
 
-    zero_state_arr[n_qubits - c_qubit - 1] = bra_ket_zero
-    one_state_arr[n_qubits - c_qubit - 1] = bra_ket_one
-
-    one_state_arr[gate_pos] = gate.get_value()
-
-    tensor_zero_state = tensor_arr(zero_state_arr)
-    tensor_one_state = tensor_arr(one_state_arr)
-    return np.add(tensor_zero_state, tensor_one_state)
+    qx_arr[n_qubits - x_qubit - 1] = gate.get_value()
+    return np.add(tensor_arr(qc_arr), tensor_arr(qx_arr))
 
 
-def count_linear_regresion(df):
+def count_linear_regresion(df, reversed_index = True):
     df = df.dropna()
-    x = df.index.to_numpy()[::-1]
+    x = None
+    if reversed_index:
+        x = df.index.to_numpy()[::-1]
+    else:
+        x = df.index.to_numpy()
     y = df.to_numpy()
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    # print(slope, intercept, r_value, p_value, std_err)
-    return intercept
-
-
-BIG_EPSILON = 0.001
-def find_best_value(min_value, max_value, epsilon, atol_val, experiment):
-    i = min_value
-    lover_bound = None
-    upper_bound = None
-    result = None
-    while i < max_value:
-        is_close = experiment(i, atol_val)
-        # print("I = ", i)
-        # print("close: DATA == EXPERIMENT", is_close)
-        if is_close:
-            lover_bound = i
-
-        if not is_close and (lover_bound is not None):
-            upper_bound = i
-
-        if lover_bound and upper_bound:
-            if epsilon <= BIG_EPSILON:
-                # print("epsilon", epsilon)
-                # print("lover_bound", lover_bound, "upper_bound", upper_bound, "i", i)
-                return i
-            else:
-                # print("lover_bound", lover_bound, "upper_bound", upper_bound, "i", i)
-                return find_best_value(lover_bound, upper_bound, epsilon / 10, atol_val / 1.01, experiment)
-        i += epsilon
+    return slope, intercept, r_value, p_value, std_err

@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
+from qiskit.visualization import plot_histogram
 
 
-def draw_circuit_scheme(df, y_label="", title=""):
+def draw_circuit_scheme(df, title=""):
     print(df)
     df_val = df.copy()
 
@@ -13,7 +14,12 @@ def draw_circuit_scheme(df, y_label="", title=""):
     print(df_val)
 
     fig, ax = plt.subplots()
-    ax = sns.heatmap(df_val, annot=df, fmt='')
+    sns.heatmap(df_val,ax=ax, annot=df, fmt='', cmap="YlGnBu")
+    ax.set_title(title)
+
+    ax.set_ylabel("Kubitai")
+    ax.set_xlabel("Laikas  $t_{i}$")
+
     plt.show()
 
 
@@ -53,3 +59,23 @@ class bcolors:
 def print_red(string):
     string = str(string)
     print(bcolors.FAIL + string + bcolors.ENDC)
+
+def print_green(string):
+    string = str(string)
+    print(bcolors.OKGREEN + string + bcolors.ENDC)
+
+
+def plot_experiment_state(df, title=""):
+    state_dict = {}
+    e = 0.001
+    longest = len("{0:b}".format(df.index[-1]))
+    print(longest)
+    repeats = "abc" * 3
+    for col in df.index:
+        if df[col] > e:
+            bin = "{0:b}".format(col)
+            add_zeros = "0" * (longest - len(bin))
+            state_dict[f'|{add_zeros + bin}⟩'] = df[col]
+
+    plot_histogram(state_dict, color="#4169e1", title=title)
+    plt.show()
