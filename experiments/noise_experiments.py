@@ -75,6 +75,7 @@ def execute_h_ry_noise_calculation():
     append_excel_sheets(df_arr=[df],
                         df_names=["yorktown_H_Aprox_ry"])
 
+# execute_h_ry_noise_calculation()
 
 def execute_h_rx_noise_calculation():
     print("execute_h_rx_noise_calculation")
@@ -93,81 +94,82 @@ def execute_h_rx_noise_calculation():
     append_excel_sheets(df_arr=[df],
                         df_names=["yorktown_H_Aprox_ry"])
 
-# execute_h_rx_noise_calculation()
 
 def execute_full_rx_noise_calculation():
-    print("execute_rx_noise_calculation")
-    df = execute_rotation_experiment(name='Sheet_f_rx_gate_quito',
-                                     experiments=prepare_full_rotation_experiment_in_interval(init_rx_gates),
-                                     noise_dictionary=noise_dict.rx_gate_quito_noise_dictionary)
-
-    append_excel_sheets(df_arr=[df],
-                        df_names=["f_rx_gate_quito_Aprox"])
-
     # print("execute_rx_noise_calculation")
-    # df = execute_rotation_experiment(name='Sheet_f_rx_gate_yorktown_Y',
+    # df = execute_rotation_experiment(name='Sheet_f_rx_gate_quito',
     #                                  experiments=prepare_full_rotation_experiment_in_interval(init_rx_gates),
-    #                                  noise_dictionary=noise_dict.rx_gate_yorktown_noise_dictionary)
+    #                                  noise_dictionary=noise_dict.rx_gate_quito_noise_dictionary)
     #
     # append_excel_sheets(df_arr=[df],
-    #                     df_names=["f_rx_gate_yorktown_Aprox"])
-
-execute_full_rx_noise_calculation()
-
-
-def execute_full_ry_noise_calculation():
-    print("execute_ry_noise_calculation")
-    df = execute_rotation_experiment(name='Sheet_f_ry_gate_quito',
-                                     experiments=prepare_full_rotation_experiment_in_interval(init_ry_gates),
-                                     noise_dictionary=noise_dict.ry_gate_quito_noise_dictionary)
+    #                     df_names=["f_rx_gate_quito_Aprox"])
+    #
+    # print("execute_rx_noise_calculation")
+    df = execute_rotation_experiment(name='Sheet_f_rx_gate_yorktown_Y',
+                                     experiments=prepare_full_rotation_experiment_in_interval(init_rx_gates),
+                                     noise_dictionary=noise_dict.rx_gate_yorktown_noise_dictionary)
 
     append_excel_sheets(df_arr=[df],
-                        df_names=["f_ry_gate_quito_Aprox"])
+                        df_names=["f_rx_gate_yorktown_Aprox"])
 
-    print("execute_ry_noise_calculation")
-    df = execute_rotation_experiment(name='Sheet_f_ry_gate_yorktown_Y1',
+# execute_full_rx_noise_calculation()
+
+def execute_full_ry_noise_calculation():
+    # print("execute_ry_noise_calculation")
+    # df = execute_rotation_experiment(name='Sheet_f_ry_gate_quito',
+    #                                  experiments=prepare_full_rotation_experiment_in_interval(init_ry_gates),
+    #                                  noise_dictionary=noise_dict.ry_gate_quito_noise_dictionary)
+    #
+    # append_excel_sheets(df_arr=[df],
+    #                     df_names=["f_ry_gate_quito_Aprox"])
+    #
+    # print("execute_ry_noise_calculation")
+    df = execute_rotation_experiment(name='Sheet_f_ry_gate_yorktown_Y',
                                      experiments=prepare_full_rotation_experiment_in_interval(init_ry_gates),
                                      noise_dictionary=noise_dict.ry_gate_yorktown_noise_dictionary)
 
     append_excel_sheets(df_arr=[df],
                         df_names=["f_ry_gate_yorktown_Aprox"])
 
+# execute_full_ry_noise_calculation()
 
 def execute_full_rz_noise_calculation():
-    print("execute_rz_noise_calculation")
-    df = execute_rotation_experiment(name='Sheet_f_rz_gate_quito',
-                                     experiments=prepare_full_rotation_experiment_in_interval(init_rz_gates),
-                                     noise_dictionary=noise_dict.rz_gate_quito_noise_dictionary)
-
-    append_excel_sheets(df_arr=[df],
-                        df_names=["f_rz_gate_quito_Aprox"])
-
     # print("execute_rz_noise_calculation")
-    # df = execute_rotation_experiment(name='Sheet_f_rz_gate_yorktown_Y',
+    # df = execute_rotation_experiment(name='Sheet_f_rz_gate_quito',
     #                                  experiments=prepare_full_rotation_experiment_in_interval(init_rz_gates),
-    #                                  noise_dictionary=noise_dict.rz_gate_yorktown_noise_dictionary)
+    #                                  noise_dictionary=noise_dict.rz_gate_quito_noise_dictionary)
     #
     # append_excel_sheets(df_arr=[df],
-    #                     df_names=["f_rz_gate_yorktown_Aprox"])
+    #                     df_names=["f_rz_gate_quito_Aprox"])
 
+    print("execute_rz_noise_calculation")
+    df = execute_rotation_experiment(name='Sheet_f_rz_gate_yorktown_Y',
+                                     experiments=prepare_full_rotation_experiment_in_interval(init_rz_gates),
+                                     noise_dictionary=noise_dict.rz_gate_yorktown_noise_dictionary)
+
+    append_excel_sheets(df_arr=[df],
+                        df_names=["f_rz_gate_yorktown_Aprox"])
+
+# execute_full_rz_noise_calculation()
 
 def execute_full_p_noise_calculation():
-    print("execute_p_noise_calculation")
-    df = execute_rotation_experiment(name='Sheet_f_p_gate_quito',
-                                     experiments=prepare_full_rotation_experiment_in_interval(init_p_gates),
-                                     noise_dictionary=noise_dict.p_gate_quito_noise_dictionary)
-
-    append_excel_sheets(df_arr=[df],
-                        df_names=["f_p_gate_quito_Aprox"])
-
     # print("execute_p_noise_calculation")
-    # df = execute_rotation_experiment(name='Sheet_f_p_gate_yorktown_Y',
+    # df = execute_rotation_experiment(name='Sheet_f_p_gate_quito',
     #                                  experiments=prepare_full_rotation_experiment_in_interval(init_p_gates),
-    #                                  noise_dictionary=noise_dict.p_gate_yorktown_noise_dictionary)
+    #                                  noise_dictionary=noise_dict.p_gate_quito_noise_dictionary)
     #
     # append_excel_sheets(df_arr=[df],
-    #                     df_names=["f_p_gate_yorktown_Aprox"])
+    #                     df_names=["f_p_gate_quito_Aprox"])
 
+    print("execute_p_noise_calculation")
+    df = execute_rotation_experiment(name='Sheet_f_p_gate_yorktown_Y',
+                                     experiments=prepare_full_rotation_experiment_in_interval(init_p_gates),
+                                     noise_dictionary=noise_dict.p_gate_yorktown_noise_dictionary)
+
+    append_excel_sheets(df_arr=[df],
+                        df_names=["f_p_gate_yorktown_Aprox"])
+
+# execute_full_p_noise_calculation()
 
 def execute_cx_noise_calculation():
     print('execute_cx_noise_calculation')
@@ -185,15 +187,15 @@ def execute_cx_noise_calculation():
     append_excel_sheets(df_arr=[df],
                         df_names=["yorktown_cx_x_o_Aprox"])
 
-
+# execute_cx_noise_calculation()
 
 def execute_experiments():
     # execute_x_M1_noise_calculation()
     # execute_x_M2_noise_calculation()
-    # execute_h_ry_noise_calculation()
+    execute_h_ry_noise_calculation()
     # execute_h_ry_noise_calculation()
     # execute_full_rx_noise_calculation()
-    execute_full_ry_noise_calculation()
+    # execute_full_ry_noise_calculation()
     # execute_full_rz_noise_calculation()
     # execute_full_p_noise_calculation()
     # execute_cx_noise_calculation()

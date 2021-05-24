@@ -23,8 +23,8 @@ def m_gate_analysis():
 def plot_m_gate_analysis():
     df = get_sheet('Sheet_quito_M_Aprox')
     x = df.index
-    y = df[0.01] # [::-1]
-    slope, intercept, r_value, p_value, std_err = count_linear_regresion(df[0.01],reversed_index=False)
+    y = df[0.01][::-1]
+    slope, intercept, r_value, p_value, std_err = count_linear_regresion(df[0.01],reversed_index=True)
     print("intercept --->", intercept)
     line = [slope * xi + intercept for xi in df.index]
     plt.title("plot_m_gate_analysis")
@@ -48,8 +48,9 @@ def plot_x_gate_analysis():
     # intercept_M11 ---> 0.4143163353500435 ------ sita imam
     # intercept_M21 ---> 0.3626673973234888
 
+    print( df_M11[0.03])
     y_M11 = df_M11[0.03][::-1]
-    y_M21= df_M21[0.03][::-1]
+    y_M21= df_M21[0.03]
 
     slope_M11, intercept_M11, r_value_M11, p_value_M11, std_err_M11 = count_linear_regresion(y_M11,reversed_index=True)
     # slope_M21, intercept_M21, r_value_M21, p_value_M21, std_err_M21 = count_linear_regresion(y_M21,reversed_index=True)
@@ -75,6 +76,22 @@ def plot_x_gate_analysis():
     plt.show()
 
 # plot_x_gate_analysis()
+
+
+def print_h_gate_analysis():
+    df_M11 = get_sheet('Sheet_yorktown_cx_x_o_Aprox')
+    x = df_M11.index
+    y_M11 = df_M11[0.03][::-1]
+    slope_M11, intercept_M11, r_value_M11, p_value_M11, std_err_M11 = count_linear_regresion(y_M11,reversed_index=True)
+
+    print("intercept_M11 --->", intercept_M11)
+
+    line_M11 = [slope_M11 * xi + intercept_M11 for xi in x]
+    print("a = ", slope_M11, " b = ", intercept_M11)
+
+# print_h_gate_analysis()
+# plot_gate_results(df, "M vartų eksperimento nuo labiausiai tikėtino rezultato" )
+
 
 def print_cx_gate_analysis():
     df_M11 = get_sheet('Sheet_quito_cx_x_o_Aprox')
@@ -108,4 +125,4 @@ def print_cx_gate_analysis():
     plt.show()
 
 
-print_cx_gate_analysis()
+# print_cx_gate_analysis()

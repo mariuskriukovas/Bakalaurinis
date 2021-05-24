@@ -10,8 +10,7 @@ from git.Bakalaurinis.tools.transple import transpile_to_yorktown
 from git.Bakalaurinis.simuliator.gates import np_gate, na_gate, gate_factory
 
 
-import git.Projektinis.tools.simulators as tools
-import git.Projektinis.tools.functions as funct
+import git.Bakalaurinis.tools.helper as tools
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -98,7 +97,6 @@ def h_rotation():
     tools.simulate_bloch_sphere(qc, 'Hadamardo - H \n $\Theta = \\frac{\pi}{2} ; \Phi = 0$')
     plt.show()
 
-# h_rotation()
 
 
 def z_rotation():
@@ -178,8 +176,8 @@ def countRX_values():
         rx.append(rx_gate.get_value(0.232))
 
     v = np.matmul(tensor_arr(rx), get_zero_ket(32))
-    funct.to_latex(v)
-    funct.printProb(v)
+    tools.to_latex(v)
+    tools.printProb(v)
 
 
 def countX_values():
@@ -188,5 +186,5 @@ def countX_values():
     print(df)
     # funct.printProb(v)
 
-countX_values()
-# # countRX_values()
+# countX_values()
+# countRX_values()

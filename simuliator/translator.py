@@ -163,6 +163,12 @@ class QASMTranslator:
         u_val = self._parse_round_bracket_content(qasm_word_arr[0])[0]
         u_val = u_val.replace("pi", "np.pi").split(",")
         lam = eval(u_val[0])
+
+        # U1NOISE
+        if self.q_noise and 'U1L' in self.q_noise.keys():
+            f = self.q_noise['U1L']
+            lam += f(lam)
+
         q = self._extract_q(qasm_word_arr[1])
         u = SimpleGate(u1_gate.get_adjusted_name(lam), u1_gate.get_value(lam))
         self._add_statement((q, u))
@@ -173,6 +179,17 @@ class QASMTranslator:
         u_val = u_val.replace("pi", "np.pi").split(",")
         phi = eval(u_val[0])
         lam = eval(u_val[1])
+
+        # U2NOISE RZ phi
+        if self.q_noise and 'U2P' in self.q_noise.keys():
+            f = self.q_noise['U2P']
+            phi += f(lam)
+
+        # U2NOISE RZ lamb
+        if self.q_noise and 'U2L' in self.q_noise.keys():
+            f = self.q_noise['U2L']
+            phi += f(lam)
+
         q = self._extract_q(qasm_word_arr[1])
         u = SimpleGate(u2_gate.get_adjusted_name((phi, lam)), u2_gate.get_value((phi, lam)))
         self._add_statement((q, u))
@@ -184,6 +201,22 @@ class QASMTranslator:
         theta = eval(u_val[0])
         phi = eval(u_val[1])
         lam = eval(u_val[2])
+
+        # U2NOISE RZ phi
+        if self.q_noise and 'U3P' in self.q_noise.keys():
+            f = self.q_noise['U3P']
+            phi += f(lam)
+
+        # U2NOISE RZ lamb
+        if self.q_noise and 'U3L' in self.q_noise.keys():
+            f = self.q_noise['U3L']
+            phi += f(lam)
+
+        # U2NOISE RZ thet
+        if self.q_noise and 'U3T' in self.q_noise.keys():
+            f = self.q_noise['U3T']
+            phi += f(lam)
+
         # print("------------------------------------>", theta)
         # print("------------------------------------>", phi)
         # print("------------------------------------>", lam)
@@ -354,7 +387,6 @@ def simulate_melburne_one(qc, noise_dic=None) -> np.array:
     translator = QASMTranslator(qc.qasm(), noise_dic, qubit_map)
     translator.parse_qasm()
     s = translator.get_simulator()
-    s.show_results_qiskit_graph()
     s_dic = s.get_results_as_dic()
     s_arr = list(map(lambda k: s_dic[k][0], s_dic.keys()))
     return np.array(s_arr)

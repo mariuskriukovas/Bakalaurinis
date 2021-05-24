@@ -30,7 +30,8 @@ def plot_hll_graphic_qiskit(df, title):
     pic = df.plot(title=title, kind='line', lw=1, fontsize=6,
                   color=my_colors,
                   use_index=True)
-
+    plt.ylabel('Tikimybės')
+    plt.xlabel('Eksprimentai intervale $ \phi \in [0, 2\pi]$')
     plt.show()
 
 
@@ -204,9 +205,9 @@ rz_q = f_quito_rz_noise()
 ry_q = f_quito_ry_noise()
 p_q = f_quito_p_noise()
 #
-# rz_y = f_yorktown_rz_noise()
-# ry_y = f_yorktown_ry_noise()
-# p_y = f_yorktown_p_noise()
+rz_y = f_yorktown_rz_noise()
+ry_y = f_yorktown_ry_noise()
+p_y = f_yorktown_p_noise()
 
 def f_factory(f):
     def adjusted_f(psi):
@@ -261,7 +262,7 @@ def plot_hhl_quito_values():
 def get_quito_best_noise_results():
     return {
         'M': gate_factory(ry_gate, 0.1737),
-         'CX': gate_factory(rx_gate,  0.4698968668407313/2),
+        'CX': gate_factory(rx_gate,  0.4698968668407313/2),
         'NRy': f_factory(ry_q),
         'NRz': f_factory(rz_q),
         'NP': f_factory(p_q),
@@ -270,10 +271,10 @@ def get_quito_best_noise_results():
 def get_yorktown_best_noise_results():
     return {
         'M': gate_factory(ry_gate, 0.279535050537985),
-        'CX': gate_factory(rx_gate, 0.772639097744361/2),
-        # 'NRy': f_factory(ry_q),
-        # 'NRz': f_factory(rz_y),
-        # 'NP': f_factory(p_y),
+        'CX': gate_factory(rx_gate, 0.682/2),
+        'NRy': f_factory(ry_q),
+        'NRz': f_factory(rz_y),
+        'NP': f_factory(p_y),
     }
 
 def get_quito_terrible_noise_results():
@@ -294,33 +295,34 @@ def plot_hhl_quito_and_mine_states_comparison():
     df_perfect = get_mine_state_values(get_no_noise_results())
     df_my_simulator = get_mine_state_values(get_quito_best_noise_results())
     df_quito = get_quito_state_values()
-    df = pd.DataFrame(data={"Mine ket{1100}": df_my_simulator['ket{1100}'], "Quito ket{1100}": df_quito['ket{1100}']})
-    plot_hll_graphic_qiskit(df, "plot_hhl_quito_and_mine_states_comparison  ket{1100}")
-    percent_diff = (df['Mine ket{1100}'].apply(np.array) - df['Quito ket{1100}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1100} percent_diff", percent_diff * 100)
+    df = pd.DataFrame(data={"Sim_Quito": df_my_simulator['ket{1100}'], "Quito": df_quito['ket{1100}'], "Qiskit": df_perfect['ket{1100}']})
+    plot_hll_graphic_qiskit(df, "$P(Q_{HHL_{\phi}} = |1100⟩)$")
 
-    percent_diff = (df['Mine ket{1100}'].apply(np.array) - df_perfect['ket{1100}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1100} percent_diff with perfect", percent_diff * 100)
+    percent_diff = (df['Sim_Quito'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Sim_Quito ket{1100} percent_diff", percent_diff * 100)
 
-    percent_diff = (df['Quito ket{1100}'].apply(np.array) - df_perfect['ket{1100}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1100} Quito percent_diff with perfect", percent_diff * 100)
+    percent_diff = (df['Quito'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Quito ket{1100} percent_diff", percent_diff * 100)
+
+    df = pd.DataFrame(data={"Sim_Quito": df_my_simulator['ket{1101}'], "Quito": df_quito['ket{1101}'], "Qiskit": df_perfect['ket{1101}']})
+    plot_hll_graphic_qiskit(df, "$P(Q_{HHL_{\phi}} = |1101⟩)$")
+
+    percent_diff = (df['Sim_Quito'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Sim_Quito ket{1101} percent_diff", percent_diff * 100)
+
+    percent_diff = (df['Quito'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Quito ket{1101} percent_diff", percent_diff * 100)
 
 
-    df = pd.DataFrame(data={"Mine ket{1101}": df_my_simulator['ket{1101}'], "Quito ket{1101}": df_quito['ket{1101}']})
-    plot_hll_graphic_qiskit(df, "plot_hhl_quito_and_mine_states_comparison  ket{1101}")
-    percent_diff = (df['Mine ket{1101}'].apply(np.array) - df['Quito ket{1101}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1101} percent_diff", percent_diff * 100)
-
+plot_hhl_quito_and_mine_states_comparison()
 
 #################################################################
 #################################################################
 #################################################################
-
 
 def plot_hhl_yorktown_states():
     df = get_yorktown_state_values()
     plot_hll_graphic_qiskit(df, "plot_hhl_yorktown_states")
-
 
 def plot_hhl_yorktown_values():
     df = get_yorktown_state_values()
@@ -328,23 +330,29 @@ def plot_hhl_yorktown_values():
     plot_hll_graphic_qiskit(df, "plot_hhl_yorktown_values")
 
 def plot_hhl_yorktown_and_mine_states_comparison():
-    df_my_simulator = get_mine_state_values(get_no_noise_results())
+    df_perfect = get_mine_state_values(get_no_noise_results())
+    df_my_simulator = get_mine_state_values(get_yorktown_best_noise_results())
     # df_perfect = get_mine_state_values(get_yorktown_best_noise_results())
     df_quito = get_yorktown_state_values()
+    df = pd.DataFrame(data={"Sim_Yorktown": df_my_simulator['ket{1100}'], "Yorktown": df_quito['ket{1100}'], "Qiskit": df_perfect['ket{1100}']})
+    plot_hll_graphic_qiskit(df, "$P(Q_{HHL_{\phi}} = |1100⟩)$")
 
-    df = pd.DataFrame(data={"Mine ket{1100}": df_my_simulator['ket{1100}'], "Yorktown ket{1100}": df_quito['ket{1100}']})
-    plot_hll_graphic_qiskit(df, "plot_hhl_yorktown_and_mine_states_comparison  ket{1100}")
-    percent_diff = (df['Mine ket{1100}'].apply(np.array) - df['Yorktown ket{1100}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1100} percent_diff", percent_diff * 100)
+    percent_diff = (df['Sim_Yorktown'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Sim_Yorktown ket{1100} percent_diff", percent_diff * 100)
 
-    df = pd.DataFrame(data={"Mine ket{1101}": df_my_simulator['ket{1101}'], "Yorktown ket{1101}": df_quito['ket{1101}']})
-    plot_hll_graphic_qiskit(df, "plot_hhl_yorktown_and_mine_states_comparison  ket{1101}")
-    percent_diff = (df['Mine ket{1101}'].apply(np.array) - df['Yorktown ket{1101}'].apply(np.array)).apply(np.linalg.norm).mean()
-    print("ket{1101} percent_diff", percent_diff * 100)
+    percent_diff = (df['Yorktown'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Yorktown ket{1100} percent_diff", percent_diff * 100)
+
+    df = pd.DataFrame(data={"Sim_Yorktown": df_my_simulator['ket{1101}'], "Yorktown": df_quito['ket{1101}'], "Qiskit": df_perfect['ket{1101}']})
+    plot_hll_graphic_qiskit(df, "$P(Q_{HHL_{\phi}} = |1101⟩)$")
+
+    percent_diff = (df['Sim_Yorktown'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Sim_Yorktown ket{1101} percent_diff", percent_diff * 100)
+
+    percent_diff = (df['Yorktown'].apply(np.array) - df['Qiskit'].apply(np.array)).apply(np.linalg.norm).mean()
+    print("Yorktown ket{1101} percent_diff", percent_diff * 100)
 
 
-def execute_experiments():
-    plot_hhl_quito_and_mine_states_comparison()
-    # plot_hhl_yorktown_and_mine_states_comparison()
+# plot_hhl_yorktown_and_mine_states_comparison()
 
 # execute_experiments()

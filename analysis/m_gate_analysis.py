@@ -20,31 +20,45 @@ def m_gate_analysis():
                           yorktown_sheet='Sheet_yorktown_M',
                           local_sheet='Sheet_measurement_gate_local')
 
-    df = extract_most_probable_values(df_dic)
-    print(df_dic['Yorktown'][1])
-    small_df = df_dic['Yorktown'][1]
-    plot_experiment_state(small_df, title="Yorktown bandymas su 1 matavimo vartais")
+    # df = extract_most_probable_values(df_dic)
+    # print(df_dic['Yorktown'][1])
+    # small_df = df_dic['Yorktown'][1]
+    # plot_experiment_state(small_df, title="Yorktown bandymas su 1 matavimo vartais")
+    # print(df_dic['Yorktown'][31])
+    # small_df = df_dic['Yorktown'][31]
+    # plot_experiment_state(small_df, title="Yorktown bandymas su 5 matavimo vartais")
 
-    print(df_dic['Yorktown'][31])
-    small_df = df_dic['Yorktown'][31]
-    plot_experiment_state(small_df, title="Yorktown bandymas su 5 matavimo vartais")
+    def plot_single_gate_results(df_result, title):
+        my_colors = ['green', 'red', 'black', 'purple']
+        pic = df_result.plot(title=title, kind='line', lw=1, fontsize=6,
+                             color=my_colors,
+                             use_index=True)
 
-    # plot_gate_results(df, "M vartų eksperimento nuo labiausiai tikėtino rezultato" )
-    names_arr = ['Quito', 'Yorktown']
-    df_dis = count_distribution_between_gates(df, names_arr)
-    df_dis['Q'] = 1 - df_dis['Quito']
-    df_dis['Y'] = 1 - df_dis['Yorktown']
+        plt.ylabel('$P(Q_{Mi} =|00000⟩)$')
+        plt.xlabel('Eksperimentai $i$')
+        plt.show()
+    df = pd.DataFrame(data={
+        'Quito':  df_dic['Quito'].iloc[0],
+        'Yorktown': df_dic['Yorktown'].iloc[0],
+        'Qiskit':  df_dic['Qiskit'].iloc[0]
+    })
+    print(df)
+    plot_single_gate_results(df, "M vartų eksperimento analizės grafikas" )
+    # names_arr = ['Quito', 'Yorktown']
+    # df_dis = count_distribution_between_gates(df, names_arr)
+    # df_dis['Q'] = 1 - df_dis['Quito']
+    # df_dis['Y'] = 1 - df_dis['Yorktown']
+    # #
+    # # (df_dis)
+    # dff = pd.DataFrame(data={'A':df_dis['Q'], 'B':df_dis['Quito'], 'C':df_dis['Y'], 'D':df_dis['Yorktown'],})
+    # print(dff)
+    # for i in range(0,6):
+    #     print(i, " & ", end="")
+    #     for k in dff.loc[[i]].to_numpy()[0]:
+    #         print(np.round(k, 4), " & ", end="")
+    #     print()
+    #     print("\\\\  \hline")
     #
-    # (df_dis)
-    dff = pd.DataFrame(data={'A':df_dis['Q'], 'B':df_dis['Quito'], 'C':df_dis['Y'], 'D':df_dis['Yorktown'],})
-    print(dff)
-    for i in range(0,6):
-        print(i, " & ", end="")
-        for k in dff.loc[[i]].to_numpy()[0]:
-            print(np.round(k, 4), " & ", end="")
-        print()
-        print("\\\\  \hline")
-
-    plot_single_gate_results(count_distribution_between_gates(df, names_arr), "Matavimo vartų nuokrypiu vidurkiai")
+    # plot_single_gate_results(count_distribution_between_gates(df, names_arr), "Matavimo vartų nuokrypiu vidurkiai")
 
 m_gate_analysis()

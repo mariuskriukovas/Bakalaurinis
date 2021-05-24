@@ -1,13 +1,8 @@
 from qiskit import IBMQ, Aer
+from qiskit import execute
 from qiskit.providers.ibmq import least_busy
-from qiskit.providers.aer.noise import NoiseModel
-import qiskit.providers.aer.noise as noise
-
 
 from git.Bakalaurinis.tools.IO_service import write_results
-from qiskit import execute
-
-import git.Bakalaurinis.tools.mock_circuit as mock
 
 number_of_shots = 1024
 
@@ -48,27 +43,9 @@ def request_quito_backend():
     print("ibmq_quito available: ", backend)
     return backend
 
-# request_quito_backend()
 
-# def test():
-#     noise_model = NoiseModel.from_backend(backend)
-#     noise_model.add_all_qubit_quantum_error()
-#     basis_gates = noise_model.basis_gates
-#     print("ibmq_quito available: ", noise_model)
-#     print("ibmq_quito available: ", basis_gates)
-#     error_1 = noise.depolarizing_error(0.001, 1)
-#     error_2 = noise.depolarizing_error(0.003, 2)
-#     print(error_2)
-#     # # Add errors to noise model
-#     noise_model = noise.NoiseModel()
-#     noise_model.add_all_qubit_quantum_error(error_1, ['u1', 'u2', 'u3'])
-#     noise_model.add_all_qubit_quantum_error(error_2, ['cx'])
-#     print(noise_model)
-#
-# test()
 
 def request_local_backend():
-    Aer.get_backend()
     return Aer.get_backend('qasm_simulator')
 
 

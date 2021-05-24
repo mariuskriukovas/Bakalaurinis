@@ -15,7 +15,6 @@ def rx_gate_yorktown_noise_dictionary(i):
         'TRx': i,
     }
 
-
 def ry_gate_quito_noise_dictionary(i):
     return {
         'M': gate_factory(ry_gate, 0.197125245579567),

@@ -160,16 +160,6 @@ class Simuliator:
         return pd.DataFrame(data=self.results)
 
 
-    def show_results_qiskit_graph(self, title="title"):
-        new_dic = {}
-        e = 0.000001
-        for k in self.results.keys():
-            state = self.results[k][0]
-            if state > e:
-                new_dic[k] = bytes((state * 1024))
-
-        plot_histogram(new_dic, title=title)
-
     def show_circuit(self, title):
         len_cir = len(self.gates[0])
         dic = {}

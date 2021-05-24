@@ -25,9 +25,9 @@ QUITO_P_SHEET_NAME = 'Sheet_f_p_gate_quito_Aprox'
 QUITO_APROX_COFF = 0.05
 
 YORKTOWN_RX_SHEET_NAME = 'Sheet_f_rx_gate_yorktown_Aprox'
-YORKTOWN_RY_SHEET_NAME = 'Sheet_f_ry_gate_yorktown_Aprox2'
-YORKTOWN_RZ_SHEET_NAME = 'Sheet_f_rz_gate_yorktown_Aprox1'
-YORKTOWN_P_SHEET_NAME = 'Sheet_f_p_gate_yorktown_Aprox1'
+YORKTOWN_RY_SHEET_NAME = 'Sheet_f_ry_gate_yorktown_Aprox'
+YORKTOWN_RZ_SHEET_NAME = 'Sheet_f_rz_gate_yorktown_Aprox'
+YORKTOWN_P_SHEET_NAME = 'Sheet_f_p_gate_yorktown_Aprox'
 
 YORKTOWN_APROX_COFF = 0.05
 
@@ -155,7 +155,7 @@ def plot_quito_ry_noise():
 
     plt.show()
 
-plot_quito_rx_noise()
+# plot_quito_rx_noise()
 # plot_quito_ry_noise()
 
 def plot_quito_rz_noise():
@@ -232,3 +232,115 @@ def plot_yorktown_p_noise():
                   use_index=True)
 
     plt.show()
+
+
+# ------------------------------------------------------------------------
+
+
+from git.Bakalaurinis.tools.excel_tools import get_excel_sheets
+from git.Bakalaurinis.simuliator.translator import simulate_all
+from git.Bakalaurinis.experiments.rotation_gate_experiments import prepare_full_rotation_experiment_in_interval, init_rx_gates,init_ry_gates,init_rz_gates
+
+
+q_f_rx = f_quito_rx_noise()
+y_f_rx = f_yorktown_rx_noise()
+q_f_ry = f_quito_ry_noise()
+y_f_ry = f_yorktown_ry_noise()
+q_f_rz = f_quito_ry_noise()
+y_f_rz = f_yorktown_ry_noise()
+
+
+rx_quito_dic = {
+'M': gate_factory(ry_gate, 0.197125245579567),
+'NRx': q_f_rx,
+}
+
+rx_yorktown_dic = {
+'M': gate_factory(ry_gate, 0.279535050537985),
+'NRx': y_f_rx,
+}
+
+ry_quito_dic = {
+'M': gate_factory(ry_gate, 0.197125245579567),
+'NRy': q_f_ry,
+}
+
+ry_yorktown_dic = {
+'M': gate_factory(ry_gate, 0.279535050537985),
+'NRy': y_f_ry,
+}
+
+rz_quito_dic = {
+'M': gate_factory(ry_gate, 0.197125245579567),
+'NRz': q_f_rz,
+}
+
+rz_yorktown_dic = {
+'M': gate_factory(ry_gate, 0.279535050537985),
+'NRz': y_f_rz,
+}
+
+def rx_analysis():
+    sheets = get_excel_sheets(['Sheet_f_rx_gate_local', 'Sheet_f_rx_gate_quito', 'Sheet_f_rx_gate_yorktown_Y'])
+    rx_dic = {
+        'Qiskit': sheets['Sheet_f_rx_gate_local'],
+        'Quito': sheets['Sheet_f_rx_gate_quito'],
+        'Yorktown': sheets['Sheet_f_rx_gate_yorktown_Y'],
+        'Sim_Quito': simulate_all(prepare_full_rotation_experiment_in_interval(init_rx_gates), rx_quito_dic),
+        'Sim_Yorktown': simulate_all(prepare_full_rotation_experiment_in_interval(init_rx_gates), rx_yorktown_dic),
+    }
+    print("RX:")
+    df_a = (rx_dic['Qiskit'] - rx_dic['Sim_Quito']).apply(np.linalg.norm)
+    df_b = (rx_dic['Qiskit'] - rx_dic['Quito']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Quito", df_a.mean())
+    print("Qiskit", "Quito", df_b.mean())
+
+    df_a = (rx_dic['Qiskit'] - rx_dic['Sim_Yorktown']).apply(np.linalg.norm)
+    df_b = (rx_dic['Qiskit'] - rx_dic['Yorktown']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Yorktown", df_a.mean())
+    print("Qiskit", "Yorktown", df_b.mean())
+
+def ry_analysis():
+    sheets = get_excel_sheets(['Sheet_f_ry_gate_local', 'Sheet_f_ry_gate_quito', 'Sheet_f_ry_gate_yorktown_Y'])
+    ry_dic = {
+        'Qiskit': sheets['Sheet_f_ry_gate_local'],
+        'Quito': sheets['Sheet_f_ry_gate_quito'],
+        'Yorktown': sheets['Sheet_f_ry_gate_yorktown_Y'],
+        'Sim_Quito': simulate_all(prepare_full_rotation_experiment_in_interval(init_ry_gates), ry_quito_dic),
+        'Sim_Yorktown': simulate_all(prepare_full_rotation_experiment_in_interval(init_ry_gates), ry_yorktown_dic),
+    }
+    print("RY:")
+    df_a = (ry_dic['Qiskit'] - ry_dic['Sim_Quito']).apply(np.linalg.norm)
+    df_b = (ry_dic['Qiskit'] - ry_dic['Quito']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Quito", df_a.mean())
+    print("Qiskit", "Quito", df_b.mean())
+
+    df_a = (ry_dic['Qiskit'] - ry_dic['Sim_Yorktown']).apply(np.linalg.norm)
+    df_b = (ry_dic['Qiskit'] - ry_dic['Yorktown']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Yorktown", df_a.mean())
+    print("Qiskit", "Yorktown", df_b.mean())
+
+def rz_analysis():
+    sheets = get_excel_sheets(['Sheet_f_rz_gate_local', 'Sheet_f_rz_gate_quito', 'Sheet_f_rz_gate_yorktown_Y'])
+    rz_dic = {
+        'Qiskit': sheets['Sheet_f_rz_gate_local'],
+        'Quito': sheets['Sheet_f_rz_gate_quito'],
+        'Yorktown': sheets['Sheet_f_rz_gate_yorktown_Y'],
+        'Sim_Quito': simulate_all(prepare_full_rotation_experiment_in_interval(init_rz_gates), rz_quito_dic),
+        'Sim_Yorktown': simulate_all(prepare_full_rotation_experiment_in_interval(init_rz_gates), rz_yorktown_dic),
+    }
+    print("RZ:")
+    df_a = (rz_dic['Qiskit'] - rz_dic['Sim_Quito']).apply(np.linalg.norm)
+    df_b = (rz_dic['Qiskit'] - rz_dic['Quito']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Quito", df_a.mean())
+    print("Qiskit", "Quito", df_b.mean())
+
+    df_a = (rz_dic['Qiskit'] - rz_dic['Sim_Yorktown']).apply(np.linalg.norm)
+    df_b = (rz_dic['Qiskit'] - rz_dic['Yorktown']).apply(np.linalg.norm)
+    print("Qiskit", "Sim_Yorktown", df_a.mean())
+    print("Qiskit", "Yorktown", df_b.mean())
+
+
+# rx_analysis()
+# ry_analysis()
+# rz_analysis()

@@ -86,6 +86,13 @@ def write_f_rotation_gate_results():
     write_results_to_excel("f_rx_gate_yorktown_Y", "rx")
     write_results_to_excel("f_ry_gate_yorktown_Y", "ry")
 
+
+def write_f_rotation_gate_local():
+    write_results_to_excel("f_rx_gate_local", "rx")
+    write_results_to_excel("f_ry_gate_local", "ry")
+    write_results_to_excel("f_rz_gate_local", "rz")
+
+# write_f_rotation_gate_local()
 # write_f_rotation_gate_results()
 
 def join_sheets(df_i, df_n):
@@ -102,14 +109,19 @@ def write_join_f_rotation_gate_results():
     # df = join_sheets(df_i, df_n)
     # append_excel_sheets([df], ["f_ry_gate_quito"])
 
-    df_i = get_sheet("Sheet_i_rz_gate_quito")
-    df_n = get_sheet("Sheet_quito_n_i_rz")
-    df = join_sheets(df_i, df_n)
-    append_excel_sheets([df], ["f_rz_gate_quito"])
+    # df_i = get_sheet("Sheet_i_rz_gate_quito")
+    # df_n = get_sheet("Sheet_quito_n_i_rz")
+    # df = join_sheets(df_i, df_n)
+    # append_excel_sheets([df], ["f_rz_gate_quito"])
+    #
+    # df_i = get_sheet("Sheet_i_p_gate_quito")
+    # df_n = get_sheet("Sheet_quito_n_i_p")
+    # df = join_sheets(df_i, df_n)
+    # append_excel_sheets([df], ["f_p_gate_quito"])
 
-    df_i = get_sheet("Sheet_i_p_gate_quito")
-    df_n = get_sheet("Sheet_quito_n_i_p")
+    df_i = get_sheet("Sheet_i_p_gate_yorktown_Y")
+    df_n = get_sheet("Sheet_n_i_p_gate_yorktown_Y")
     df = join_sheets(df_i, df_n)
-    append_excel_sheets([df], ["f_p_gate_quito"])
+    append_excel_sheets([df], ["f_p_gate_yorktown_Y"])
 
 # write_join_f_rotation_gate_results()

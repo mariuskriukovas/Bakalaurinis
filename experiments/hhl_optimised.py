@@ -2,13 +2,9 @@ import numpy as np
 from qiskit import QuantumRegister, QuantumCircuit, ClassicalRegister
 import matplotlib.pyplot as plt
 from qiskit.aqua.algorithms import HHL, NumPyLSsolver
-import git.Projektinis.tools.simulators as tools
+import git.Bakalaurinis.tools.helper as tools
 import git.Bakalaurinis.tools.backend_service as back
-from git.Bakalaurinis.simuliator.translator import  simulate_one, QASMTranslator
-
-# theta -- Angle defining |b>
-# a -- Matrix diagonal
-# b -- Matrix off-diagonal
+from git.Bakalaurinis.simuliator.translator import simulate_one, QASMTranslator
 
 def optimized_hhl_circuit(a, b, theta):
     t = 2  # This is not optimal; As an exercise, set this to the
@@ -101,13 +97,8 @@ def optimized_hhl_circuit(a, b, theta):
 
     return (qr, cr, qc)
 
-# Vartai kuriuos reikia istestuoti
-# Ry
-# U
-# H
-# P
-# CX
-# RZ
+
+# Vartai kuriuos reikia istestuoti # Ry # U # H # P # CX # RZ
 
 def classical_hhl_solver(a, b, theta):
     a_matrix = [[a, b], [b, a]]
@@ -117,14 +108,6 @@ def classical_hhl_solver(a, b, theta):
     print("Solution:\t", result)
     return result
 
-
-# as example
-# qc = optimized_hhl_circuit(a = 1,
-#                            b = 0,
-#                            theta = 0)
-# classical_hhl_solver(a = 1,
-#                      b = 0,
-#                      theta = 0)
 
 def prepare_hhl_optimised_gate_experiment():
     q_arr = []
@@ -138,14 +121,6 @@ def prepare_hhl_optimised_gate_experiment():
         i += 0.1
     return q_arr
 
-
-# q_arr = prepare_hhl_optimised_gate_experiment()
-# (qr, cr, qc) = q_arr[0]
-# s = QASMTranslator(qc.qasm()).get_simulator()
-# s.show_results()
-# qc.draw(output='mpl')
-# tools.simulate_and_show_result(qc, f'a = {str(1)} b = {str(0)} theta = {str(0)}')
-# plt.show()
 
 def apply_hhl_optimised_local_experiment():
     exp_arr = prepare_hhl_optimised_gate_experiment()

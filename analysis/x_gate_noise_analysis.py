@@ -45,4 +45,4 @@ def plot_regresions():
     print(df)
     draw_simple_plot(df,"Test")
 
-plot_regresions()
+# plot_regresions()

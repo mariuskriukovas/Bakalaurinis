@@ -2,7 +2,7 @@
 # from qiskit.visualization import plot_histogram
 #
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
-# import git.Projektinis.tools.simulators as tools
+# import git.Bakalaurinis.tools.helper as tools
 import matplotlib.pyplot as plt
 
 

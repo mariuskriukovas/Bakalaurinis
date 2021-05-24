@@ -76,7 +76,7 @@ def execute_rotation_experiment(name,
             real_data = DATA[i].to_numpy()
             e = experiments[i]
             if i < 40:
-                b_value = (np.pi)
+                b_value = (np.pi) / 2
             else:
                 b_value = (np.pi) / 2
             best = None
@@ -88,7 +88,7 @@ def execute_rotation_experiment(name,
                 if is_close:
                     best = j
                     break
-                j += 0.01
+                j += 0.005
             best_arr.append(best)
             print("i = ", i, "atol = ", epsilon, " Best ---> ", best)
             dic_val[epsilon] = best_arr

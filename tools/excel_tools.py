@@ -39,3 +39,12 @@ def get_excel_sheet_names():
 def print_excel_sheets():
     for e in get_excel_sheet_names():
         print(e)
+
+def delete_sheets(names):
+    with pd.ExcelFile(NAME) as writer:
+        for e in names:
+            writer.remove(writer[e])
+    writer.save()
+    writer.close()
+
+# delete_sheets([])
